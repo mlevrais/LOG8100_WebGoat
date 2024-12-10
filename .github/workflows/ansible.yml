@@ -1,4 +1,4 @@
-name: Ansible files & Deployment 
+name: Ansible files & Deployment
 
 on:
   push:

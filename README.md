@@ -33,7 +33,7 @@ Then initialize Terraform
 ```
 terraform init
 ```
-Then apply the tf files to configure the cluster 
+Then apply the tf files to configure the cluster
 ```
 terraform apply -var-file="variables.tfvars"
 ```
