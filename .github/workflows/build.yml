@@ -51,7 +51,3 @@ jobs:
                     cache: 'maven'
             -   name: Build with Maven
                 run: mvn --no-transfer-progress verify
-
-        
-              
-        
