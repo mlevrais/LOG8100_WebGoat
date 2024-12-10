@@ -1,0 +1,32 @@
+name: Ansible files & Deployment
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-ansible:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Python (needed to install Ansible)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      # Step 3: Install Ansible
+      - name: Install Ansible
+        run: |
+          pip install ansible
+
+      # Step 4: Run the Ansible playbook
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i ./ansible/inventory.ini ./ansible/playbook.yml
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: 'False'
