@@ -1,12 +1,8 @@
 name: Ansible files & Deployment
 
 on:
-  push:
-    paths:
-      - 'ansible/**'
   pull_request:
-    paths:
-      - 'ansible/**'
+    branches: [ main ]
 
 jobs:
   run-ansible:
