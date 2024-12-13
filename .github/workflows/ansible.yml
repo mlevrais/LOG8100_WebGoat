@@ -1,9 +1,9 @@
 name: Ansible files & Deployment
 
 on:
-  # Use this to test on your PR branch
-  # pull_request:
-  #   branches: [ main ]
+  Use this to test on your PR branch
+  pull_request:
+    branches: [ main ]
   push:
     branches:
         - main
