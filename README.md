@@ -49,6 +49,7 @@ terraform apply -var-file="variables.tfvars"
 ```
 
 ### Confirming that the cluster is configured
+
 Use the following command to make sure the cluster is configured. You should see the namespace `webgoat`.
 
 ```
