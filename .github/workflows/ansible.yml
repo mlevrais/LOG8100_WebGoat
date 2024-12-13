@@ -48,7 +48,7 @@ jobs:
           REGION: ${{ secrets.GKE_REGION }}
         run: |
           terraform import -var="project_id=${{ secrets.PROJECT_ID }}" -var="region=${{ secrets.GKE_REGION }}" google_compute_network.vpc projects/${{ secrets.PROJECT_ID }}/global/networks/${{ secrets.PROJECT_ID }}-vpc
-          terraform import -var="project_id=${{ secrets.PROJECT_ID }}" -var="region=${{ secrets.GKE_REGION }}" google_compute_subnetwork.subnet ${{ secrets.PROJECT_ID }}/us-central1/${{ secrets.PROJECT_ID }}-subnet
+          terraform import -var="project_id=${{ secrets.PROJECT_ID }}" -var="region=${{ secrets.GKE_REGION }}" google_compute_subnetwork.subnet ${{ secrets.PROJECT_ID }}/${{ secrets.GKE_REGION }}/${{ secrets.PROJECT_ID }}-subnet
           terraform import -var="project_id=${{ secrets.PROJECT_ID }}" -var="region=${{ secrets.GKE_REGION }}" google_container_cluster.primary projects/${{ secrets.PROJECT_ID }}/locations/${{ secrets.GKE_REGION }}/clusters/${{ secrets.GKE_CLUSTER }}
           terraform import -var="project_id=${{ secrets.PROJECT_ID }}" -var="region=${{ secrets.GKE_REGION }}" google_container_node_pool.primary_nodes projects/${{ secrets.PROJECT_ID }}/locations/${{ secrets.GKE_REGION }}/clusters/${{ secrets.GKE_CLUSTER }}/nodePools/${{ secrets.GKE_CLUSTER }}
       - name: Apply terraform config
