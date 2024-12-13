@@ -48,14 +48,6 @@ jobs:
       - name: Load Docker image from file
         run: docker load < temporary-image.tar
 
-      - name: Scan with Trivy
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: temporary-image:latest
-          severity: HIGH,CRITICAL
-          format: table
-          exit-code: 1 # Fail if vulnerabilities are found
-          
       - name: Scan with Docker Scout
         run: docker scout cves temporary-image:latest
 
@@ -70,6 +62,18 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
             sarif_file: clair_results.sarif
+
+      - name: Scan with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        env:
+          TRIVY_TIMEOUT: 20m
+          TRIVY_LOG_LEVEL: DEBUG
+        with:
+          image-ref: temporary-image:latest
+          severity: HIGH,CRITICAL
+          format: table
+          exit-code: 1 # Fail if vulnerabilities are found
+
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
