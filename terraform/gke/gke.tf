@@ -45,7 +45,12 @@ resource "google_container_node_pool" "primary_nodes" {
   version = data.google_container_engine_versions.gke_version.release_channel_default_version["STABLE"]
   node_count = var.gke_num_nodes
 
+  node_locations = [
+    "us-central1-a",
+  ]
+
   node_config {
+    disk_size_gb = 10
     oauth_scopes = [
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring",
