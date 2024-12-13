@@ -44,8 +44,8 @@ jobs:
       - name: Import cluster
         working-directory: ./terraform/gke
         env:
-          - PROJECT_ID: ${{ secrets.PROJECT_ID }}
-          - REGION: ${{ secrets.GKE_REGION }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          REGION: ${{ secrets.GKE_REGION }}
         run: |
           terraform import google_compute_network.vpc projects/${{ secrets.PROJECT_ID }}/global/networks/${{ secrets.GKE_VPC }}
           terraform import google_compute_subnetwork.subnet ${{ secrets.PROJECT_ID }}/${{ secrets.GKE_REGION }}/${{ secrets.GKE_SUBNET }}
