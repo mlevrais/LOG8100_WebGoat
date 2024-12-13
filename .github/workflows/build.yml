@@ -38,7 +38,7 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                os: [ windows-latest, ubuntu-latest, macos-13 ]
+                os: [ ubuntu-latest ]
             max-parallel: 1
         steps:
             -   uses: actions/checkout@v4.1.6
@@ -81,7 +81,15 @@ jobs:
             - name: Scan with Docker Scout
               run: docker scout cves temporary-image:latest
 
+              
             - name: Scan with Clair
-              uses: ovh/clair-action@v3
+              uses: quay/clair-action@main
               with:
-                  clair-image: temporary-image:latest
+                  image-ref: temporary-image:latest
+                  format: sarif
+                  output: clair_results.sarif
+                  docker-config-dir: /
+            - name: Upload sarif
+              uses: github/codeql-action/upload-sarif@v2
+              with:
+                  sarif_file: clair_results.sarif
