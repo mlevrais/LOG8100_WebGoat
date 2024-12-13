@@ -12,11 +12,11 @@ name: Publish Docker image
 on:
   push:
     branches:
-      - main
+      - dockerscan
       - releases/*
 
-jobs:
-  push_to_registry:
+jobs:  
+  build:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
 
@@ -53,7 +53,7 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          push: true
+          push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           #build-args: |
@@ -62,3 +62,32 @@ jobs:
           #  POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
           #  POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
           #  POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          
+  security_scan:
+        name: Container Security Analysis
+        runs-on: ubuntu-latest
+        needs: [ build ]
+        steps:
+            - name: Scan with Trivy
+              uses: aquasecurity/trivy-action@0.28.0
+              with:
+                  image-ref: ${{ steps.meta.outputs.tags }}
+                  severity: HIGH,CRITICAL
+                  format: table
+                  exit-code: 1 # Fail if vulnerabilities are found
+
+            - name: Scan with Docker Scout
+              run: docker scout cves ${{ steps.meta.outputs.tags }}
+
+            - name: Scan with Clair
+              uses: quay/clair-action@main
+              with:
+                  image-ref: ${{ steps.meta.outputs.tags }}
+                  format: sarif
+                  output: clair_results.sarif
+                  docker-config-dir: /
+
+            - name: Upload sarif
+              uses: github/codeql-action/upload-sarif@v2
+              with:
+                  sarif_file: clair_results.sarif
