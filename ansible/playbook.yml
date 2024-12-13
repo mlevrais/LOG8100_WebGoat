@@ -66,19 +66,12 @@
         name: prometheus-community
         repo_url: "https://prometheus-community.github.io/helm-charts"
 
-    - name: Separately update the repository cache
-      kubernetes.core.helm:
-        name: prometheus-community
-        namespace: kube-system
-        state: absent
-        update_repo_cache: true
-
     - name: Install Helm chart for Prometheus
       kubernetes.core.helm:
         name: prometheus
         chart_ref: prometheus-community/prometheus
         release_namespace: webgoat
-        state: present
+        state: absent
         values_files: prometheus.yml  # Reference your custom values.yaml
 
     - name: Install kube-state-metrics using Helm
@@ -86,7 +79,7 @@
         name: kube-state-metrics
         chart_ref: prometheus-community/kube-state-metrics
         release_namespace: webgoat  # Replace with your namespace
-        state: present
+        state: absent
         values:
           serviceMonitor.enabled: true  # This ensures Prometheus scrapes kube-state-metrics
           serviceMonitor.namespace: monitoring  # The namespace where Prometheus is running
@@ -97,7 +90,7 @@
         name: alert-manager
         chart_ref: prometheus-community/alertmanager
         release_namespace: webgoat
-        state: present
+        state: absent
         values_files: alertmanager.yml  # Reference your custom values.yaml
 
     - name: Add stable chart repo
