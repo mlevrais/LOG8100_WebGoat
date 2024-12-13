@@ -8,7 +8,7 @@ on:
         branches: [ main ]
     push:
         branches:
-            - dockerscan
+            - main
 permissions:
   contents: write
 
