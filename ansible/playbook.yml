@@ -92,6 +92,14 @@
           serviceMonitor.namespace: monitoring  # The namespace where Prometheus is running
           serviceMonitor.interval: 30s  # Scrape interval
 
+    - name: Install Helm chart for Alert Manager
+      kubernetes.core.helm:
+        name: alert-manager
+        chart_ref: prometheus-community/alertmanager
+        release_namespace: webgoat
+        state: present
+        values_files: alertmanager.yml  # Reference your custom values.yaml
+
     - name: Add stable chart repo
       kubernetes.core.helm_repository:
         name: grafana
