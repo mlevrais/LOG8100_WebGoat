@@ -1,3 +1,12 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# GitHub recommends pinning actions to a commit SHA.
+# To get a newer version, you will need to update the SHA.
+# You can also reference a tag or branch, but the action may change without warning.
+
 name: Publish Docker image
 
 on:
@@ -6,9 +15,9 @@ on:
       - dockerscan
       - releases/*
 
-jobs:  
-  build:
-    name: Build and scan Docker image
+jobs:
+  build_and_scan:
+    name: Build and Scan Docker image
     runs-on: ubuntu-latest
 
     steps:
@@ -18,35 +27,26 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
-            java-version: '21'
-            distribution: 'temurin'
+          java-version: '21'
+          distribution: 'temurin'
 
       - name: Build application
         run: mvn clean package
 
       - name: Build Docker image
         id: build
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: Dockerfile
-          push: false # Do not push to Docker Hub yet
+          push: false # Do not push yet
           tags: temporary-image:latest
 
-  security_scan:
-    name: Container Security Analysis
-    runs-on: ubuntu-latest
-    needs: [ build ]
+      - name: Save Docker image to file
+        run: docker save -o temporary-image.tar temporary-image:latest
 
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4
-
-      - name: Log in to Docker Hub (optional, if private images are used)
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Load Docker image from file
+        run: docker load < temporary-image.tar
 
       - name: Scan with Trivy
         uses: aquasecurity/trivy-action@0.28.0
@@ -56,18 +56,35 @@ jobs:
           format: table
           exit-code: 1 # Fail if vulnerabilities are found
 
-      - name: Scan with Docker Scout
-        run: docker scout cves temporary-image:latest
+  push_to_registry:
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    needs: build_and_scan
 
-      - name: Scan with Clair
-        uses: quay/clair-action@main
-        with:
-          image-ref: temporary-image:latest
-          format: sarif
-          output: clair_results.sarif
-          docker-config-dir: /
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
 
-      - name: Upload sarif
-        uses: github/codeql-action/upload-sarif@v2
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
-          sarif_file: clair_results.sarif
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: jesusles/webgoat
+
+      - name: Build and push Docker image
+        id: push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
