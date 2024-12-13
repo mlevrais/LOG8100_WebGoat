@@ -55,7 +55,7 @@ jobs:
       - name: Install Ansible
         run: |
           pip install ansible
-      
+
       - name: Get Kubeconfig path
         run: echo $HOME/.kube/config
 
