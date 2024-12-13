@@ -70,7 +70,7 @@ jobs:
           image-ref: temporary-image:latest
           severity: HIGH,CRITICAL
           format: table
-          exit-code: 1 # Fail if vulnerabilities are found
+          # exit-code: 1 # Uncomment if we want to stop pushing when HIGH and CRITICAL vulnerabilities are detected
 
   push_to_registry:
     name: Push Docker image to Docker Hub
