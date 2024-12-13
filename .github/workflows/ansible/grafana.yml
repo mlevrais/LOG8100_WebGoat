@@ -1,0 +1,20 @@
+- name: Deploy Grafana
+  hosts: k8s
+  tasks:
+    - name: Deploy Grafana with Helm
+      community.kubernetes.helm:
+        chart_ref: grafana
+        release_name: grafana
+        namespace: monitoring
+        chart_repo_url: https://grafana.github.io/helm-charts
+        version: "9.10.1"
+        values: |
+          adminUser: "admin"
+          adminPassword: "admin"
+          datasources:
+            datasources.yaml:
+              apiVersion: 1
+              datasources:
+              - name: Prometheus
+                type: prometheus
+                url: http://prometheus-server.monitoring.svc.cluster.local

@@ -1,0 +1,8 @@
+- name: Create Kubernetes Namespaces
+  hosts: k8s
+  tasks:
+    - name: Create monitoring namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: monitoring

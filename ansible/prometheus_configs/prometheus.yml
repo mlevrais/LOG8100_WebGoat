@@ -23,6 +23,7 @@ scrape_configs:
       - targets: ['localhost:8080']
 
   # Scrape Kubernetes metrics from kube-state-metrics
-  #- job_name: 'kube-state-metrics'
-  #  static_configs:
-  #    - targets: ['kube-stats-metrics:8080']
+  - job_name: 'kube-state-metrics'
+    static_configs:
+      - targets: ['kube-state-metrics.monitoring.svc.cluster.local:8080']
+

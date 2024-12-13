@@ -1,0 +1,19 @@
+- name: Deploy kube-state-metrics
+  hosts: k8s
+  tasks:
+    - name: Deploy kube-state-metrics with Helm
+      community.kubernetes.helm:
+        chart_ref: kube-state-metrics
+        release_name: kube-state-metrics
+        namespace: monitoring
+        chart_repo_url: https://kubernetes.github.io/kube-state-metrics
+        version: "4.20.2"
+        values: |
+          replicaCount: 1
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"

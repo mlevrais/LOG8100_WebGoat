@@ -1,0 +1,42 @@
+- name: Deploy Prometheus
+  hosts: k8s
+  tasks:
+    - name: Deploy Prometheus with Helm
+      community.kubernetes.helm:
+        chart_ref: prometheus
+        release_name: prometheus
+        namespace: monitoring
+        chart_repo_url: https://prometheus-community.github.io/helm-charts
+        version: "15.14.0"
+        values: |
+          server:
+            configMaps:
+              - prometheus-config
+            resources:
+              requests:
+                memory: "128Mi"
+                cpu: "100m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
+
+    - name: Copy Prometheus configuration
+      ansible.builtin.copy:
+        src: ansible/prometheus_configs/prometheus.yml
+        dest: /etc/prometheus/prometheus.yml
+        owner: prometheus
+        group: prometheus
+
+    - name: Copy Alert Rules
+      ansible.builtin.copy:
+        src: ansible/prometheus_configs/alert_rules.yml
+        dest: /etc/prometheus/rules/alert_rules.yml
+        owner: prometheus
+        group: prometheus
+
+    - name: Copy Alertmanager configuration
+      ansible.builtin.copy:
+        src: ansible/prometheus_configs/alertmanager.yml
+        dest: /etc/alertmanager/alertmanager.yml
+        owner: alertmanager
+        group: alertmanager
