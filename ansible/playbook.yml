@@ -52,8 +52,41 @@
                 port: 8080       # Expose this port on the service to the outside world
                 targetPort: 8080  # Forward to containerPort 8080 inside the container
 
-    - name: Deploy latest version of Prometheus chart inside monitoring namespace (and create it)
-      kubernetes.core.helm:
-        name: webgoat
-        chart_ref: stable/kube-prometheus-stack
+    - name: Add stable chart repo
+      kubernetes.core.helm_repository:
+        name: prometheus-community
+        repo_url: "https://prometheus-community.github.io/helm-charts"
+        update_repo_cache: true
+
+    - name: Install Helm chart for Prometheus
+      kubernetes.core.helm_repository:
+        name: prometheus
+        chart_ref: prometheus-community/prometheus
         release_namespace: webgoat
+        state: present
+        values:
+          prometheus.prometheusSpec.scrapeInterval: "15s"
+          prometheus.prometheusSpec.retention: "15d"
+          prometheus.prometheusSpec.additionalScrapeConfigs:
+            - job_name: 'kubernetes-nodes'
+              kubernetes_sd_configs:
+                - role: node
+            - job_name: 'kubernetes-pods'
+              kubernetes_sd_configs:
+                - role: pod
+          prometheus.prometheusSpec.alertingConfig:
+            alertmanagers:
+              - static_configs:
+                  - targets:
+                    - 'alertmanager.monitoring.svc:9093'
+
+    - name: Install Helm chart for Grafana
+      kubernetes.core.helm_repository:
+        name: grafana
+        chart_ref: grafana/grafana
+        release_namespace: monitoring
+        state: present
+        values:
+          grafana.adminPassword: 'admin'
+          grafana.persistence.enabled: true
+          grafana.persistence.size: 500Mi

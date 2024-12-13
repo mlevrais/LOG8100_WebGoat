@@ -63,6 +63,9 @@ jobs:
       - name: Get Kubeconfig path
         run: echo $HOME/.kube/config
 
+      - name: Install ansible kubernetes (for Helm charts)
+        run: ansible-galaxy collection install kubernetes.core
+
       # Step 4: Run the Ansible playbook
       - name: Run Ansible Playbook
         run: |
