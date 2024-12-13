@@ -65,7 +65,7 @@
         update_repo_cache: true
 
     - name: Install Helm chart for Prometheus
-      kubernetes.core.helm_repository:
+      kubernetes.core.helm:
         name: prometheus
         chart_ref: prometheus-community/prometheus
         release_namespace: webgoat
@@ -87,7 +87,7 @@
                     - 'alertmanager.monitoring.svc:9093'
 
     - name: Install Helm chart for Grafana
-      kubernetes.core.helm_repository:
+      kubernetes.core.helm:
         name: grafana
         chart_ref: grafana/grafana
         release_namespace: monitoring
