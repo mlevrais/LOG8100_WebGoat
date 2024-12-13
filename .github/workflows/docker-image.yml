@@ -55,7 +55,21 @@ jobs:
           severity: HIGH,CRITICAL
           format: table
           exit-code: 1 # Fail if vulnerabilities are found
+          
+      - name: Scan with Docker Scout
+        run: docker scout cves temporary-image:latest
 
+      - name: Scan with Clair
+        uses: quay/clair-action@main
+        with:
+            image-ref: temporary-image:latest
+            format: sarif
+            output: clair_results.sarif
+            docker-config-dir: /
+      - name: Upload sarif
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+            sarif_file: clair_results.sarif
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
