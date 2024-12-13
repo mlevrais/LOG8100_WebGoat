@@ -55,7 +55,14 @@
     - name: Add stable chart repo
       kubernetes.core.helm_repository:
         name: prometheus-community
+        namespace: webgoat
         repo_url: "https://prometheus-community.github.io/helm-charts"
+        
+    - name: Separately update the repository cache
+      kubernetes.core.helm:
+        name: prometheus-community
+        namespace: webgoat
+        state: present
         update_repo_cache: true
 
     - name: Install Helm chart for Prometheus
