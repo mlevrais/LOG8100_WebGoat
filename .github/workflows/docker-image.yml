@@ -54,7 +54,7 @@ jobs:
           context: .
           file: Dockerfile
           push: false
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: temporary-image:latest
           labels: ${{ steps.meta.outputs.labels }}
           #build-args: |
           #  POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
@@ -71,18 +71,18 @@ jobs:
             - name: Scan with Trivy
               uses: aquasecurity/trivy-action@0.28.0
               with:
-                  image-ref: ${{ steps.meta.outputs.tags }}
+                  image-ref: temporary-image:latest
                   severity: HIGH,CRITICAL
                   format: table
                   exit-code: 1 # Fail if vulnerabilities are found
 
             - name: Scan with Docker Scout
-              run: docker scout cves ${{ steps.meta.outputs.tags }}
+              run: docker scout cves temporary-image:latest
 
             - name: Scan with Clair
               uses: quay/clair-action@main
               with:
-                  image-ref: ${{ steps.meta.outputs.tags }}
+                  image-ref: temporary-image:latest
                   format: sarif
                   output: clair_results.sarif
                   docker-config-dir: /
