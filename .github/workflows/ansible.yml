@@ -40,7 +40,7 @@ jobs:
           sudo apt-get install terraform
       - name: Initialize terraform
         working-directory: ./terraform/gke
-        run: terraform init
+        run: terraform init -var="project_id=${{ secrets.PROJECT_ID }}" -var="${{ secrets.GKE_REGION }}"
       - name: Import cluster
         working-directory: ./terraform/gke
         run: |
@@ -53,6 +53,7 @@ jobs:
         run: terraform apply -auto-approve -var="project_id=${{ secrets.PROJECT_ID }}" -var="${{ secrets.GKE_REGION }}"
   configure-cluster:
     runs-on: ubuntu-latest
+    needs: provision-cluster
     permissions:
       contents: 'read'
       id-token: 'write'
