@@ -79,8 +79,7 @@
         chart_ref: prometheus-community/prometheus
         release_namespace: webgoat
         state: present
-        values:
-          - ./prometheus.yaml  # Reference your custom values.yaml
+        values_files: ./prometheus.yaml  # Reference your custom values.yaml
 
     - name: Install kube-state-metrics using Helm
       kubernetes.core.helm:
