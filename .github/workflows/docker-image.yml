@@ -47,28 +47,16 @@ jobs:
 
       - name: Install Docker Scout
         run: |
-          curl -fsSL https://github.com/docker/scout-cli/releases/download/v1.15.1/docker-scout_1.15.1_linux_amd64.tar.gz -o docker-scout.tar.gz || exit 0
-          tar -xvf docker-scout.tar.gz || exit 0
-          mv docker-scout /usr/local/bin/ || exit 0
-          chmod +x /usr/local/bin/docker-scout || exit 0
+          curl -fsSL https://github.com/docker/scout-cli/releases/download/v1.15.1/docker-scout_1.15.1_linux_amd64.tar.gz -o docker-scout.tar.gz
+          tar -xvf docker-scout.tar.gz
+          mv docker-scout /usr/local/bin/
+          chmod +x /usr/local/bin/docker-scout
 
       - name: Verify Docker Scout
-        run: docker scout --version || echo "Docker Scout not available."
+        run: docker scout --version
 
       - name: Scan with Docker Scout
         run: docker scout cves temporary-image:latest || echo "Docker Scout scan skipped."
-
-      - name: Scan with Clair
-        uses: quay/clair-action@main
-        with:
-            image-ref: temporary-image:latest
-            format: sarif
-            output: clair_results.sarif
-            docker-config-dir: /
-      - name: Upload sarif
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-            sarif_file: clair_results.sarif
 
       - name: Scan with Trivy
         uses: aquasecurity/trivy-action@0.28.0
