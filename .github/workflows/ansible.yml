@@ -67,9 +67,9 @@ jobs:
       - name: Run Ansible Playbook
         run: |
           ansible-playbook -i ./ansible/inventory.ini ./ansible/playbook.yml
-          ansible-playbook -i ./ansible/inventory.ini ./ansible/namespaces.yml
-          ansible-playbook -i ./ansible/inventory.ini ./ansible/kube-state-metrics.yml
-          ansible-playbook -i ./ansible/inventory.ini ./ansible/prometheus.yml
-          ansible-playbook -i ./ansible/inventory.ini ./ansible/grafana.yml
+          ansible-playbook -i ./ansible/inventory.ini .github/workflows/ansible/namespaces.yml
+          ansible-playbook -i ./ansible/inventory.ini .github/workflows/ansible/kube-state-metrics.yml
+          ansible-playbook -i ./ansible/inventory.ini .github/workflows/ansible/prometheus.yml
+          ansible-playbook -i ./ansible/inventory.ini .github/workflows/ansible/grafana.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: 'False'
