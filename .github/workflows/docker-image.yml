@@ -52,11 +52,8 @@ jobs:
           mv docker-scout /usr/local/bin/
           chmod +x /usr/local/bin/docker-scout
 
-      - name: Verify Docker Scout
-        run: docker scout --version
-
       - name: Scan with Docker Scout
-        run: docker scout cves temporary-image:latest || echo "Docker Scout scan skipped."
+        run: docker-scout cves temporary-image:latest || echo "Docker Scout scan skipped."
 
       - name: Scan with Trivy
         uses: aquasecurity/trivy-action@0.28.0
