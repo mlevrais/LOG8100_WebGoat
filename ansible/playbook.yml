@@ -30,9 +30,18 @@
                 containers:
                   - name: webgoat
                     image: "jesusles/webgoat:main"
+                    env:
+                      - name: "WEBGOAT_PORT"
+                        value: "8080"
                     ports:
                       - containerPort: 8080  # Application port
-                      - containerPort: 9091  # Prometheus port 
+                    readinessProbe:
+                    httpGet:
+                      path: /actuator/health  # Endpoint for checking readiness
+                      port: 8080
+                    initialDelaySeconds: 30  # Wait 10 seconds after the container starts before starting readiness checks
+                    periodSeconds: 5        # Check every 5 seconds
+                    failureThreshold: 3      # Retry 3 times before considering the pod "unready"
 
     - name: Create service to expose the application
       kubernetes.core.k8s:
@@ -56,7 +65,7 @@
       kubernetes.core.helm_repository:
         name: prometheus-community
         repo_url: "https://prometheus-community.github.io/helm-charts"
-        
+
     - name: Separately update the repository cache
       kubernetes.core.helm:
         name: prometheus-community
@@ -86,13 +95,25 @@
                   - targets:
                     - 'alertmanager.monitoring.svc:9093'
 
+    - name: Install kube-state-metrics using Helm
+      kubernetes.core.helm:
+        name: kube-state-metrics
+        chart_ref: prometheus-community/kube-state-metrics
+        release_namespace: webgoat  # Replace with your namespace
+        state: present
+        values:
+          serviceMonitor.enabled: true  # This ensures Prometheus scrapes kube-state-metrics
+          serviceMonitor.namespace: monitoring  # The namespace where Prometheus is running
+          serviceMonitor.interval: 30s  # Scrape interval
+
+    - name: Add stable chart repo
+      kubernetes.core.helm_repository:
+        name: grafana
+        repo_url: "https://grafana.github.io/helm-charts"
+
     - name: Install Helm chart for Grafana
       kubernetes.core.helm:
         name: grafana
         chart_ref: grafana/grafana
-        release_namespace: monitoring
+        release_namespace: webgoat
         state: present
-        values:
-          grafana.adminPassword: 'admin'
-          grafana.persistence.enabled: true
-          grafana.persistence.size: 500Mi
