@@ -62,6 +62,15 @@ jobs:
 
       - name: Get Kubeconfig path
         run: echo $HOME/.kube/config
+        
+      - name: Install Helm
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+          chmod +x get_helm.sh
+          ./get_helm.sh
+
+      - name: Install Ansible Collections
+        run: ansible-galaxy collection install -r ./ansible/requirements.yml
 
       # Step 4: Run the Ansible playbook
       - name: Run Ansible Playbook
