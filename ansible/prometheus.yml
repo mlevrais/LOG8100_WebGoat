@@ -9,12 +9,12 @@ alerting:
         - targets: ['alertmanager:9093']
 
 rule_files:
-  - "/etc/prometheus/rules/alert_rules.yml"
+  - "/etc/prometheus/config/alert_rules.yml"
 
 server:
   extraVolumeMounts:
     - name: alert-rules-volume
-      mountPath: /etc/prometheus/rules
+      mountPath: /etc/prometheus/config
       subPath: alert_rules.yaml
   extraVolumes:
     - name: alert-rules-volume
