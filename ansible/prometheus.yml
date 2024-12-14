@@ -5,11 +5,23 @@ global:
 
 alerting:
   alertmanagers:
-    - static_configs:
+    alertmanagerSpec:
+      ruleSelector: 'prometheus-alert-rules'
+    static_configs:
         - targets: ['alertmanager:9093']
 
-rule_files:
-  - "alert_rules.yml"
+# rule_files:
+#   - "alert_rules.yml"
+
+server:
+  extraVolumeMounts:
+    - name: alert-rules-volume
+      mountPath: /etc/prometheus/rules
+      subPath: alert.rules.yaml
+  extraVolumes:
+    - name: alert-rules-volume
+      configMap:
+        name: prometheus-alert-rules
 
 scrape_configs:
   # Scrape Prometheus itself

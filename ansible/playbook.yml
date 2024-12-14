@@ -76,10 +76,27 @@
     - name: Install Helm chart for Prometheus
       kubernetes.core.helm:
         name: prometheus
+        volumeMounts:
+                  - name: alert-rules-volume
+                    mountPath: /etc/prometheus/rules
         chart_ref: prometheus-community/prometheus
         release_namespace: webgoat
         state: present
         values_files: prometheus.yml  # Reference your custom values.yaml
+    
+    - name: Create ConfigMap for Prometheus alert rules from file
+      kubernetes.core.k8s:
+        name: prometheus-alert-rules
+        namespace: webgoat
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: prometheus-alert-rules
+            namespace: webgoat
+          data:
+            alert_rules.yaml: "{{ lookup('file', 'alert_rules.yaml') }}"
 
     - name: Install kube-state-metrics using Helm
       kubernetes.core.helm:
