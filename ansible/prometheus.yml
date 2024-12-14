@@ -10,6 +10,7 @@ alerting:
 
 rule_files:
   - "/etc/prometheus/config/alert_rules.yml"
+  - alert_rules.yaml
 
 server:
   extraVolumeMounts:
