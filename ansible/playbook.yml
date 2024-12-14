@@ -76,9 +76,6 @@
     - name: Install Helm chart for Prometheus
       kubernetes.core.helm:
         name: prometheus
-        volumeMounts:
-                  - name: alert-rules-volume
-                    mountPath: /etc/prometheus/rules
         chart_ref: prometheus-community/prometheus
         release_namespace: webgoat
         state: present
