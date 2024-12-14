@@ -111,7 +111,7 @@
         name: alert-manager
         chart_ref: prometheus-community/alertmanager
         release_namespace: webgoat
-        state: present
+        state: absent
         values_files: alertmanager.yml  # Reference your custom values.yaml
 
     - name: Add stable chart repo
