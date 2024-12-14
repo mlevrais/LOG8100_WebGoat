@@ -93,7 +93,7 @@
             name: prometheus-alert-rules
             namespace: webgoat
           data:
-            alert_rules.yaml: "{{ lookup('file', 'alert_rules.yaml') }}"
+            alert_rules.yaml: "{{ lookup('file', 'alert_rules.yml') }}"
 
     - name: Install kube-state-metrics using Helm
       kubernetes.core.helm:
