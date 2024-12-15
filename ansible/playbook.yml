@@ -117,3 +117,52 @@
         chart_ref: grafana/grafana
         release_namespace: webgoat
         state: present
+    - name: Create namespace opencost if not exist
+      kubernetes.core.k8s:
+        name: opencost
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Deploy OpenCost pod
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: opencost
+            namespace: opencost
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: opencost
+            template:
+              metadata:
+                labels:
+                  app: opencost
+              spec:
+                containers:
+                  - name: opencost
+                    image: "opencost/opencost"
+                    ports:
+                      - containerPort: 9003
+
+    - name: Create service to expose the OpenCost pod
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: opencost
+            namespace: opencost
+          spec:
+            type: ClusterIP
+            selector:
+              app: opencost
+            ports:
+              - protocol: TCP
+                port: 9003
+                targetPort: 9003
