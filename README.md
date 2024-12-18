@@ -60,20 +60,19 @@ kubectl get namespaces
 
 #### Requirements:
 
-- Before configuring the cluster, you need to register an application on Azure and obtain a secret so that Terraform can automate the creation of the cluster on your behalf.
-- Azure CLI version 2.30.0 or higher
-
-Then, in your terminal, go to the `terraform` directory
+- Before configuring the cluster, you need to register an application on Google Console.
+- Then you need to install Google Cloud SDK, and set up the project. The following command configures Google Cloud SDK to point to the project. 
 
 ```
-cd ./terraform
+gcloud config set project ${{ secrets.PROJECT_ID }}
+gcloud components install gke-gcloud-auth-plugin
+gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} --region=${{ secrets.GKE_REGION }}
 ```
 
-**Optional** In `variables.tfvars`, set:
+Then, in your terminal, go to the `terraform/gke` directory
 
 ```
-appId = "<YOUR APP ID>"
-password = "<YOUR APP SECRET>"
+cd ./terraform/gke
 ```
 
 If you are running Terraform for the first time, intialize Terraform:
@@ -82,13 +81,7 @@ If you are running Terraform for the first time, intialize Terraform:
 terraform init
 ```
 
-If you updated the `variables.tfvars` file, apply the tf files to configure the cluster :
-
-```
-terraform apply -var-file="variables.tfvars"
-```
-
-Or if you want to enter the app ID and secret from the command line:
+If you updated the `variables.tfvars` file, apply the tf files to provision the cluster:
 
 ```
 terraform apply

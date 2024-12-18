@@ -66,27 +66,6 @@
         name: prometheus-community
         repo_url: "https://prometheus-community.github.io/helm-charts"
 
-    # - name: Separately update the repository cache
-    #   kubernetes.core.helm:
-    #     name: prometheus-community
-    #     namespace: kube-system
-    #     state: absent
-    #     update_repo_cache: true
-    
-    - name: Create ConfigMap for Prometheus alert rules from file
-      kubernetes.core.k8s:
-        name: prometheus-alert-rules
-        namespace: webgoat
-        state: present
-        definition:
-          apiVersion: v1
-          kind: ConfigMap
-          metadata:
-            name: prometheus-alert-rules
-            namespace: webgoat
-          data:
-            alert_rules.yaml: "{{ lookup('file', 'alert_rules.yml') }}"
-
     - name: Install Helm chart for Prometheus
       kubernetes.core.helm:
         name: prometheus
@@ -94,27 +73,6 @@
         release_namespace: webgoat
         state: present
         values_files: prometheus.yml  # Reference your custom values.yaml
-    
-    
-
-    # - name: Install kube-state-metrics using Helm
-    #   kubernetes.core.helm:
-    #     name: kube-state-metrics
-    #     chart_ref: prometheus-community/kube-state-metrics
-    #     release_namespace: webgoat  # Replace with your namespace
-    #     state: present
-    #     values:
-    #       serviceMonitor.enabled: true  # This ensures Prometheus scrapes kube-state-metrics
-    #       serviceMonitor.namespace: monitoring  # The namespace where Prometheus is running
-    #       serviceMonitor.interval: 30s  # Scrape interval
-
-    # - name: Install Helm chart for Alert Manager
-    #   kubernetes.core.helm:
-    #     name: alert-manager
-    #     chart_ref: prometheus-community/alertmanager
-    #     release_namespace: webgoat
-    #     state: absent
-    #     values_files: alertmanager.yml  # Reference your custom values.yaml
 
     - name: Add stable chart repo
       kubernetes.core.helm_repository:
