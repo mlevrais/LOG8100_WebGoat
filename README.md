@@ -61,7 +61,7 @@ kubectl get namespaces
 #### Requirements:
 
 - Before configuring the cluster, you need to register an application on Google Console.
-- Then you need to install Google Cloud SDK, and set up the project. The following command configures Google Cloud SDK to point to the project. 
+- Then you need to install Google Cloud SDK, and set up the project. The following command configures Google Cloud SDK to point to the project.
 
 ```
 gcloud config set project ${{ secrets.PROJECT_ID }}
