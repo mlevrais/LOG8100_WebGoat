@@ -2,8 +2,8 @@ name: Cluster configuration and deployment
 
 on:
   # Use this to test on your PR branch
-  pull_request:
-    branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
   push:
     branches:
         - main
